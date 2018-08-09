@@ -73,7 +73,7 @@ ready(function() {
   const controls = new _orbitControls(camera);
 
   // Update dimensions on resize
-  window.onresize = windowResize(renderer, camera);
+  window.onresize = () => windowResize(renderer, camera);
 
   // Prepare geometries and meshes
   const loader = new GLTFLoader();
