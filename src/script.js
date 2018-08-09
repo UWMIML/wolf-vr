@@ -6,6 +6,12 @@ import riggedWolfGLTF from './rigged-wolf.gltf';
 import wolfAlbedo from './img/wolf-albedo.png';
 import wolfSpec from './img/wolf-spec.png';
 import wolfNormal from './img/wolf-normal.png';
+import posx from './img/posx.jpg';
+import posy from './img/posy.jpg';
+import posz from './img/posz.jpg';
+import negx from './img/negx.jpg';
+import negy from './img/negy.jpg';
+import negz from './img/negz.jpg';
 
 const ready = cb => {
   /in/.test(document.readyState) // in = loadINg
@@ -24,6 +30,11 @@ const windowResize = (renderer, camera) => {
 ready(function() {
   let mixer;
   const clock = new THREE.Clock();
+  const envMap = new THREE.CubeTextureLoader().load([
+    posx, negx,
+    posy, negy,
+    posz, negz
+  ]);
   const [ windowWidth, windowHeight ] = [ window.innerWidth, window.innerHeight ];
   // Set up renderer
   const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -39,7 +50,7 @@ ready(function() {
 
   // Set up scene
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xaaaaaa);
+  scene.background = envMap;
 
   // Add light to scene
   const hemlight = new THREE.HemisphereLight(0xfff0f0, 0x606066, 0.5);
@@ -73,14 +84,14 @@ ready(function() {
     scene.add(object);
     object.traverse(node => {
       if(node.material && 'envMap' in node.material){
-        console.log(node);
         const albedoTexture = new THREE.TextureLoader().load(wolfAlbedo);
         const normalTexture = new THREE.TextureLoader().load(wolfNormal);
         const specularityTexture = new THREE.TextureLoader().load(wolfSpec);
+        node.castShadow = true;
+        node.receiveShadow = true;
         node.material.normalMap = normalTexture;
         node.material.map = albedoTexture;
         node.material.lightMap = specularityTexture;
-        node.material.envMap = null;
         node.material.needsUpdate = true;
       }
     });
